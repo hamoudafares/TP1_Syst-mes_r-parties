@@ -3,47 +3,55 @@ import  javax.swing.*;
 import  java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 public class MyFrame extends JFrame{
-
-	public JTextArea jt,jt_1,jt_2; 
+	public HashMap<String, JTextArea> jTextAreas = new HashMap<String, JTextArea>();
+	public JTextArea myTextArea; 
 	private User user;
+	private int numUsers;
+	private int largeurFrame;
+	private ArrayList<String> names = new ArrayList<String>();
 	
-			MyFrame(String m){
-				
-				this.user = new User(m,this);
+			MyFrame(String m, ArrayList<String> namesUser){
+				this.names.addAll(namesUser);
+				names.remove(m);
+				this.user = new User(m,this, names);
 				user.receiver.start();
-		  		  
-				JFrame f = new JFrame("Text Field Examples");
-				f.setBounds(100, 100, 491, 550);
+		  		// arg numusers;
+				numUsers = names.size();
+				System.out.println(numUsers);
+				largeurFrame = 1000;
+				JFrame f = new JFrame(m);
+				f.setBounds(100, 100, largeurFrame, 550);
 	        	f.getContentPane().setLayout(null);
-				jt = new JTextArea();
-				jt_1 = new JTextArea();
-				jt_2 = new JTextArea();
-				jt_1.setEditable(false);
-				jt.setEditable(false);
-	
-				JScrollPane s = new JScrollPane(jt);
-				JScrollPane s_ = new JScrollPane(jt_1);
-				JScrollPane s__ = new JScrollPane(jt_2);
-				s_.setBounds(250, 11, 200, 200);
-				s__.setBounds(35, 250, 400, 200);
-	
-				s.setBounds(10, 11, 200, 200);   
-				                
-	
-				f.getContentPane().add(s);
-				f.getContentPane().add(s_);
-				f.getContentPane().add(s__);
+	        	Iterator<String> iter = names.iterator();
+	        	int largeurText = largeurFrame / numUsers - 22;
+	        	int i = 0;
+	        	while (iter.hasNext()) {
+	        		JTextArea jt = new JTextArea();
+	        		JScrollPane s = new JScrollPane(jt);
+	        		s.setBounds(11 + i + i * largeurText, 11, largeurText, 200);
+	        		i++ ;
+	        		f.getContentPane().add(s);
+	        		jt.setEditable(false);
+	        		jTextAreas.put(iter.next(),jt);
+	        	}
+	        
+				myTextArea = new JTextArea();
+				
+				JScrollPane myScrollPane = new JScrollPane(myTextArea);
+				myScrollPane.setBounds(largeurFrame / 2 - 200, 250, 400, 200);
+				f.getContentPane().add(myScrollPane);
 				f.show();
-	
-	
-				jt_2.addKeyListener(new KeyAdapter() {
+				myTextArea.addKeyListener(new KeyAdapter() {
 					public void keyReleased(KeyEvent e) {
 					  JTextArea textArea = (JTextArea) e.getSource();
 					  String text = textArea.getText();
-					  user.sender.send(text+user.name);
+					  user.sender.send(user.name + ' ' + text);
 					}
-			  
 					public void keyTyped(KeyEvent e) {
 					}
 			  

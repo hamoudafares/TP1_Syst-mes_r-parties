@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+
+import javax.swing.JTextArea;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -13,9 +16,8 @@ public class Receive extends Thread {
 	  private  Channel channel ;
 	  private MyFrame f;
 	  private String name;
-	  ArrayList<String> Names = new ArrayList<>(Arrays.asList("nouuur", "marwen", "faress"));
 	  
-	  public Receive(String message, MyFrame frame ) {
+	  public Receive(String message, MyFrame frame) {
 		  f = frame;
 		  this.factory = new ConnectionFactory();
 		  this.factory.setHost("localhost");
@@ -30,30 +32,18 @@ public class Receive extends Thread {
 			e.printStackTrace();
 		} 
 		  name = message;
-		  Names.remove(name);
 	  }
 
 	  public void run () {
 		  
 		  try {
-			  
-
 				this.channel.queueDeclare(name, false, false, false, null);
 				  DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 					     String message = new String(delivery.getBody(), "UTF-8");
-					     String owner = message.substring(message.length()-6);
-
-					     if(owner.equals((String) Names.get(0))){
-					    	 f.jt.setText(message.substring(0,message.length()-6));
-					     }
-					     else
-					    	 f.jt_1.setText(message.substring(0,message.length()-6));
-					     
-					     
-   
+					     String owner = message.split(" ")[0];
+					     System.out.println(owner);
+					     f.jTextAreas.get(owner).setText(message.substring(owner.length(),message.length()));
 					};
-					
-					
 					channel.basicConsume(name, true, deliverCallback, consumerTag -> { });
 			  
 		  

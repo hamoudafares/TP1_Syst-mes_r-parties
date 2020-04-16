@@ -1,19 +1,20 @@
 import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 public class Send {
-	
-		  private  String[] QUEUE_NAME ;
+		  private  ArrayList<String> QUEUE_NAME = new ArrayList<String>();
 		  private   ConnectionFactory factory ;
 		  private   Connection connection ;
 		  private Channel channel ;
 		  private String name;
-		  public Send(String name) {
+		  
+		  public Send(String name, ArrayList<String> names) {
 			  this.name = name ; 
 			  this.factory = new ConnectionFactory();
 			  this.factory.setHost("localhost");
@@ -27,21 +28,18 @@ public class Send {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			  QUEUE_NAME = new String[]{"nouuur","marwen","faress"};
+			  QUEUE_NAME = names;
 		  }
 		  public void send (String msg) {
 			  		
 			        String message = msg;
-			        for(int i=0;i<QUEUE_NAME.length;i++){
-			        	 if(!QUEUE_NAME[i].equals(name)){
-			        		 System.out.println(QUEUE_NAME[i]);
+			        for(int i=0;i<QUEUE_NAME.size();i++){
 				        try {
-							channel.basicPublish("", QUEUE_NAME[i], null,  message.getBytes());
+							channel.basicPublish("", QUEUE_NAME.get(i), null,  message.getBytes());
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-			        }
 			        }
         
 		  }
